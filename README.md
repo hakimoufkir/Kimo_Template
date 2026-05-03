@@ -1,121 +1,96 @@
-# ZLApp
+# Kimo Clean Architecture Template
 
-ZLApp is a small ASP.NET Core and Vue application used to manage and display weather forecasts and locations.
+A `dotnet new` template for scaffolding a .NET 10 Clean Architecture solution with ASP.NET Core Web API and Vue 3 SPA.
 
-It contains:
+## Stack
 
-- a versioned ASP.NET Core API
-- a Vue 3 frontend
-- SQL Server persistence through EF Core
-- OIDC authentication against the local or hosted IdentityServer
+- **Backend:** ASP.NET Core Web API (.NET 10), EF Core, SQL Server, Hangfire, Serilog, OIDC
+- **Frontend:** Vue 3, TypeScript, Vite, PrimeVue, Tailwind CSS
+- **Architecture:** Clean Architecture (Domain → Application → Infrastructure → Web)
 
 ## Solution Structure
 
-- `source/Kimo.ZLApp.Web`
-  Main web host. Serves the API and the Vue frontend.
-- `source/Kimo.ZLApp.Application`
-  Application layer with commands, queries, models, and request pipelines.
-- `source/Kimo.ZLApp.Infrastructure`
-  EF Core, database access, and external integrations.
-- `tests`
-  Test projects.
-- `docs`
-  Project documentation.
+```
+source/
+  {Company}.{Project}.Web                 Main web host — API + Vue SPA
+  {Company}.{Project}.Application         Commands, queries, models, request pipelines
+  {Company}.{Project}.Domain              Domain entities and aggregates
+  {Company}.{Project}.Infrastructure      EF Core, repositories, external integrations
+  {Company}.{Project}.Infrastructure.Jobs Hangfire job definitions
+  {Company}.{Project}.WorkerService       Windows Service host for Hangfire
+tests/
+  *.UnitTests                             xUnit test projects per layer
+```
 
-## Main Features
+## Using the Template
 
-- list, create, and delete weather forecasts
-- list locations
-- permission-based authorization
-- automatic database migrations on startup
-- environment split for local and production IdentityServer integration
+### Install
+
+```bash
+dotnet new install ./template-pack/KimoTemplate.1.0.0.nupkg
+```
+
+### Scaffold a new solution
+
+```bash
+dotnet new kimo -n "Acme.MyProject"
+```
+
+`Kimo.ZLApp` is replaced with `Acme.MyProject` everywhere — file names, directories, namespaces, and project references. Private `Kimo.FX.*` package references are left untouched.
+
+### Uninstall
+
+```bash
+dotnet new uninstall KimoTemplate
+```
+
+## Prerequisites
+
+- .NET 10 SDK
+- Node.js and npm
+- SQL Server / SQL Server LocalDB
+- `C:\local-nuget` registered as a NuGet source (contains private `Kimo.FX.*` packages)
+
+The generated project includes a `NuGet.config` that pre-registers `C:\local-nuget` automatically.
 
 ## Local Development
 
-Requirements:
-
-- .NET SDK
-- Node.js and npm
-- SQL Server / SQL Server Express
-
 ### Backend
 
-Run the web app:
-
-```powershell
-cd C:\Users\AbdelhakimOufkir\RiderProjects\ZLApp
-dotnet run --project source\Kimo.ZLApp.Web\Kimo.ZLApp.Web.csproj
+```bash
+dotnet run --project source\{Company}.{Project}.Web
 ```
 
-Important notes:
-
-- the backend applies EF Core migrations on startup
-- local development uses the `Development` environment configuration
-- local development is configured to use the local IdentityServer at `https://localhost:7443`
+- Applies EF Core migrations on startup
+- Runs on `https://localhost:5001`
+- Uses `Development` environment by default (local IdentityServer at `https://localhost:7443`)
 
 ### Frontend
 
-Run the Vue app:
-
-```powershell
-cd C:\Users\AbdelhakimOufkir\RiderProjects\ZLApp\source\Kimo.ZLApp.Web\ClientApp
+```bash
+cd source\{Company}.{Project}.Web\ClientApp
 npm install
 npm run dev
 ```
 
-Default local frontend URL:
-
-- `https://localhost:5002`
-
-Default local backend URL:
-
-- `https://localhost:5001`
+Runs on `https://localhost:5002`.
 
 ## Authentication
 
-ZLApp uses OIDC with two environment targets:
+OIDC-based authentication with environment-specific authorities:
 
-- Development
-  - backend authority: `https://localhost:7443`
-  - frontend authority: `https://localhost:7443`
-- Production
-  - backend authority: `https://kimo-id-server.azurewebsites.net`
-  - frontend authority: `https://kimo-id-server.azurewebsites.net`
+| Environment | Authority |
+|---|---|
+| Development | `https://localhost:7443` |
+| Production | `https://kimo-id-server.azurewebsites.net` |
 
-The frontend is now English-only.
+## NuGet Package
 
-## API Overview
+The template is packaged in `template-pack/KimoTemplate.csproj` and produces `KimoTemplate.1.0.0.nupkg`.
 
-Current controllers:
+To rebuild the package after changes:
 
-- `ForecastController`
-- `LocationController`
-
-Controller reference:
-
-- [docs/controllers.md](./docs/controllers.md)
-
-Main endpoints:
-
-- `GET /api/v1/forecasts`
-- `GET /api/v1/forecasts/{id}`
-- `POST /api/v1/forecasts`
-- `DELETE /api/v1/forecasts?id=1&id=2`
-- `GET /api/v1/locations`
-
-## Database
-
-ZLApp uses SQL Server.
-
-Check the active connection strings in:
-
-- `source/Kimo.ZLApp.Web/appsettings.json`
-- `source/Kimo.ZLApp.Web/appsettings.Development.json`
-- `source/Kimo.ZLApp.Web/appsettings.Production.json`
-
-## Notes
-
-- authorization is permission-based
-- frontend route guards and API calls both depend on the token permissions
-- `403` responses are redirected to `/unauthorized` in the frontend
-- claims are read from the OIDC user profile and, when needed, from the access token payload
+```bash
+cd template-pack
+dotnet pack KimoTemplate.csproj -o .
+```
