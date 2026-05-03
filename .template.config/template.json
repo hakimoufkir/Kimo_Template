@@ -10,8 +10,17 @@
     "language": "C#",
     "type": "solution"
   },
-  "sourceName": "Kimo.ZLApp",
+  "sourceName": "KimoTemplate",
   "preferNameDirectory": true,
+  "symbols": {
+    "ProjectNamespace": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "Kimo.ZLApp",
+      "fileRename": "Kimo.ZLApp"
+    }
+  },
   "sources": [
     {
       "source": "./",
