@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageId>Kimo.ZLApp.Template</PackageId>
+    <PackageId>KimoTemplate</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
     <Title>Kimo ZLApp Clean Architecture Solution Template</Title>
     <Authors>Kimo</Authors>
