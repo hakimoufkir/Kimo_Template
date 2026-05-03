@@ -4,7 +4,7 @@
   "classifications": [ "Web", "API", "Clean Architecture", "Vue" ],
   "name": "Kimo ZLApp Clean Architecture Solution",
   "identity": "Kimo.ZLApp.Template",
-  "shortName": "zlapp",
+  "shortName": "kimo",
   "description": "A .NET 10 Clean Architecture solution with ASP.NET Core Web API, Vue 3 SPA, Hangfire, EF Core, Serilog, and OIDC authentication.",
   "tags": {
     "language": "C#",
