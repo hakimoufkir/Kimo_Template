@@ -3,7 +3,7 @@
   "author": "Kimo",
   "classifications": [ "Web", "API", "Clean Architecture", "Vue" ],
   "name": "KimoTemplate",
-  "identity": "Kimo.ZLApp.Template",
+  "identity": "KimoTemplate",
   "shortName": "kimo",
   "description": "A .NET 10 Clean Architecture solution with ASP.NET Core Web API, Vue 3 SPA, Hangfire, EF Core, Serilog, and OIDC authentication.",
   "tags": {
