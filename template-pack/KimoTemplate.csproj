@@ -4,7 +4,7 @@
     <PackageType>Template</PackageType>
     <PackageId>KimoTemplate</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
-    <Title>Kimo ZLApp Clean Architecture Solution Template</Title>
+    <Title>KimoTemplate</Title>
     <Authors>Kimo</Authors>
     <Description>A .NET 10 Clean Architecture solution template with ASP.NET Core Web API, Vue 3 SPA, Hangfire, EF Core, and Serilog.</Description>
     <PackageTags>template;dotnet;aspnetcore;cleanarchitecture;vue3;hangfire;efcore;serilog</PackageTags>
