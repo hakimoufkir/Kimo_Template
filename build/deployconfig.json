@@ -1,0 +1,100 @@
+﻿{
+  "stages": {
+    "Test": {
+      "IIS": [
+        {
+          "TargetHost": "deployws.spt1.kimoapps.lan",
+          "WebDeployPort": 8172,
+          "NetCoreWebApplication": true,
+          "WebProjectName": "Kimo.ZLApp.Web",
+          "AppPoolAdDomain": "kimo.lan",
+          "Application": "PH_ZLAppWeb",
+          "ApplicationPath": "%websiterootpath%/PH_ZLApp_Web",
+          "IISManagementHost": "01spappt-01v",
+          "Authentication": ["Anonymous"],
+          "StopAppPool": true,
+          "Bindings": [
+            {
+              "Protocol": "https",
+              "HostName": "zlapp.ph.spt1.kimoapps.lan",
+              "Host": "01spappt-01v",
+              "Port": 443
+            }
+          ]
+        }
+      ]
+    },
+    "Staging": {
+      "IIS": [
+        {
+          "TargetHost": "deployws.spk1.kimoapps.lan",
+          "WebDeployPort": 8172,
+          "NetCoreWebApplication": true,
+          "WebProjectName": "Kimo.ZLApp.Web",
+          "AppPoolAdDomain": "kimo.lan",
+          "Application": "PH_ZLAppWeb",
+          "ApplicationPath": "%websiterootpath%/PH_ZLApp_Web",
+          "IISManagementHost" : "01spappk-01v",
+          "Authentication" : ["Anonymous"],
+          "StopAppPool":  true,
+          "Bindings": [
+            {
+              "Protocol": "https",
+              "HostName": "zlapp.ph.spk1.kimoapps.lan",
+              "Host": "01spappk-01v",
+              "Port": 443
+            },
+            {
+              "Protocol": "https",
+              "HostName": "zlapp.ph.spk1.kimoapps.lan",
+              "Host": "01spappk-02v",
+              "Port": 443
+            },
+            {
+              "Protocol": "https",
+              "HostName": "zlapp.ph.spk1.kimoapps.lan",
+              "Host": "01spappk-03v",
+              "Port": 443
+            }
+          ]
+        }
+      ]
+    },
+    "Production": {
+      "IIS": [
+        {
+          "TargetHost": "deployws.kimoportalapps.de",
+          "WebDeployPort": 8172,
+          "NetCoreWebApplication": true,
+          "WebProjectName": "Kimo.ZLApp.Web",
+          "AppPoolAdDomain": "kimo.lan",
+          "Application": "PH_ZLAppWeb",
+          "ApplicationPath": "%websiterootpath%/PH_ZLApp_Web",
+          "IISManagementHost" : "01spappp-01v",
+          "Authentication" : ["Anonymous"],
+          "StopAppPool":  true,
+          "Bindings": [
+            {
+              "Protocol": "https",
+              "HostName": "zlapp.ph.kimoportalapps.de",
+              "Host": "01spappp-01v",
+              "Port": 443
+            },
+            {
+              "Protocol": "https",
+              "HostName": "zlapp.ph.kimoportalapps.de",
+              "Host": "01spappp-02v",
+              "Port": 443
+            },
+            {
+              "Protocol": "https",
+              "HostName": "zlapp.ph.kimoportalapps.de",
+              "Host": "01spappp-03v",
+              "Port": 443
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

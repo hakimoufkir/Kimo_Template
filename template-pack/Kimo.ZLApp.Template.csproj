@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageId>Kimo.ZLApp.Template</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Title>Kimo ZLApp Clean Architecture Solution Template</Title>
+    <Authors>Kimo</Authors>
+    <Description>A .NET 10 Clean Architecture solution template with ASP.NET Core Web API, Vue 3 SPA, Hangfire, EF Core, and Serilog.</Description>
+    <PackageTags>template;dotnet;aspnetcore;cleanarchitecture;vue3;hangfire;efcore;serilog</PackageTags>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <!-- Include dotfiles (.gitignore, .editorconfig, .dockerignore, etc.) -->
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Include the entire solution root as template content.
+      PackagePath maps each file into content/ in the NuGet package, preserving relative paths.
+      The template engine searches content/ for .template.config/template.json automatically.
+    -->
+    <Content Include="..\**\*"
+             Exclude="..\**\bin\**;..\**\obj\**;..\**\node_modules\**;..\**\.git\**;..\**\.vs\**;..\**\.idea\**;..\**\.claude\**;..\template-pack\**;..\**\*.nupkg;..\**\*.snupkg"
+             PackagePath="content\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

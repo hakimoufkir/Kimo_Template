@@ -1,0 +1,216 @@
+﻿trigger:
+  branches:
+    include:
+      - master
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+
+parameters:
+  - name: buildEnvUser
+    displayName: Build Stage
+    type: string
+    default: auto
+    values:
+      - auto
+      - production
+      - staging
+      - test
+
+variables:
+  disable.coverage.autogenerate: 'true'
+
+  ${{ if contains(variables['Build.SourceBranch'], 'master' ) }}:
+    buildEnvAuto: 'production'
+  ${{ if contains(variables['Build.SourceBranch'], 'hotfix' ) }}:
+    buildEnvAuto: 'staging'
+  ${{ if contains(variables['Build.SourceBranch'], 'release' ) }}:
+    buildEnvAuto: 'staging'
+  ${{ if contains(variables['Build.SourceBranch'], 'feature' ) }}:
+    buildEnvAuto: 'test'
+  ${{ if contains(variables['Build.SourceBranch'], 'develop' ) }}:
+    buildEnvAuto: 'test'
+
+  ${{ if not(eq(parameters.buildEnvUser, 'auto'))}}:
+    buildEnv: ${{ parameters.buildEnvUser }}
+  ${{ if eq(parameters.buildEnvUser, 'auto')}}:
+    buildEnv: ${{ variables.buildEnvAuto }}
+
+pool:
+  name: AEDefaultPool
+
+steps:
+  - powershell: |
+      if ($Env:Build_Reason -eq 'PullRequest')
+      {
+          Write-Output "PR Environment is $(System.PullRequest.TargetBranch)"
+          if ( $Env:System_PullRequest_TargetBranch -like '*master')
+          {
+            Write-Host "##vso[task.setvariable variable=buildEnv;]production"
+          }
+      
+          if ($Env:System_PullRequest_TargetBranch -like '*release')
+          {
+            Write-Host "##vso[task.setvariable variable=buildEnv;]staging"
+          }
+      
+          if ($Env:System_PullRequest_TargetBranch -like '*feature')
+          {
+            Write-Host "##vso[task.setvariable variable=buildEnv;]test"
+          }
+      
+          if ($Env:System_PullRequest_TargetBranch -like '*develop')
+          {
+            Write-Host "##vso[task.setvariable variable=buildEnv;]test"
+          }
+      }
+    displayName: Selected environment by PR
+
+  - powershell: |
+      Write-Output "Environment is $(buildEnv)"
+    displayName: Selected environment
+
+
+  - task: GitVersion@5
+    displayName: GitVersion
+    inputs:
+      runtime: 'core'
+
+  - powershell: |
+      $teamProject = "https://tfs.kimo.lan/STA/AE"
+      $repository = "AutoDeployment"
+      $branch = "develop"
+      $folder = "Cake"
+      
+      Copy-Item .\build\deployconfig.json deployconfigN.json
+      
+      if (Test-Path build) {
+         Remove-Item -Recurse -Force build
+      }
+      
+      if (Test-Path tools) {
+         Remove-Item -Recurse -Force tools
+      }
+      
+      $folderDetails = Invoke-RestMethod -Uri "$($teamProject)/_apis/git/repositories/$($repository)/items?path=$($folder)&versionDescriptor.version=$($branch)" -UseDefaultCredentials
+      
+      Invoke-WebRequest -Uri "$($teamProject)/_apis/git/repositories/$($repository)/trees/$($folderDetails.objectId)?recursive=true" -UseDefaultCredentials -Headers @{"accept"="application/zip"} -OutFile "$($env:SYSTEM_DEFAULTWORKINGDIRECTORY)\Scripts.zip"
+      Add-Type -AssemblyName System.IO.Compression.FileSystem
+      [System.IO.Compression.ZipFile]::ExtractToDirectory("$($env:SYSTEM_DEFAULTWORKINGDIRECTORY)\Scripts.zip", "$($env:SYSTEM_DEFAULTWORKINGDIRECTORY)\dist\")
+      
+      Remove-Item  .gitignore
+      [System.IO.Compression.ZipFile]::ExtractToDirectory("$($env:SYSTEM_DEFAULTWORKINGDIRECTORY)\Scripts.zip", "$($env:SYSTEM_DEFAULTWORKINGDIRECTORY)\")
+      
+      Remove-Item .\dist\build\deployconfig.json -Force
+      Copy-Item .\deployconfigN.json .\dist\build\deployconfig.json
+    displayName: 'Download Build- and Release-Scripts'
+
+  - powershell: |
+      $teamProject = "https://tfs.kimo.lan/STA/AE"
+      $repository = "AutoDeployment"
+      
+      Invoke-WebRequest -Uri "$($teamProject)/_apis/git/repositories/$($repository)/items?path=ServerScripts/Initialize-ScriptingEnv.ps1&versionDescriptor.version=feature/AnpassungenReadme" -OutFile ($env:SYSTEM_DEFAULTWORKINGDIRECTORY + "\Initialize-ScriptingEnv.ps1") -UseDefaultCredentials
+      . ($env:SYSTEM_DEFAULTWORKINGDIRECTORY + "\Initialize-ScriptingEnv.ps1")
+    displayName: 'Download and invoke Initialize-ScriptingEnv.ps1'
+  
+  - task: NodeTool@0
+    displayName: 'Install Node.js 20.x'
+    inputs:
+      versionSpec: '20.x'
+      checkLatest: true
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet format'
+    inputs:
+      command: custom
+      custom: format
+      arguments: '--verify-no-changes'
+      projects: source//**/*.csproj
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build'
+    inputs:
+      command: build
+      arguments: '-warnaserror -p:SpaEnvironment=$(buildEnv)'
+      projects: source//**/*.csproj
+
+  - powershell: |
+      $teamProject = "https://tfs.kimo.lan/STA/AE"
+      $repository = "!Snippets"
+      
+      . ($env:tmpServerScriptsDir + "\Invoke-ReSharperQA.ps1")
+      Invoke-ReSharperQA -InspectCodeDir "$env:AETOOLSDIR\ReSharperCLT\latest\" -DotSettingsUrl "$($teamProject)/_apis/git/repositories/$($repository)/items?path=Richtlinien/Kimo-Resharper-NoTS.DotSettings&versionDescriptor.version=master" -SolutionPath ($env:SYSTEM_DEFAULTWORKINGDIRECTORY + "\Kimo.ZLApp.sln") -Severity "WARNING" -NuGetBuildPS1Dir $env:SYSTEM_DEFAULTWORKINGDIRECTORY -NuGetCakeScriptPath ($env:SYSTEM_DEFAULTWORKINGDIRECTORY +"\build.cake") -OnlyPRAndDevelop:$false -Disabled:$false
+    displayName: Resharper
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet test'
+    inputs:
+      command: test
+      arguments: '--settings tests.runsettings --results-directory $(Common.TestResultsDirectory) --collect:"XPlat Code Coverage" --no-build'
+      publishTestResults: false
+  
+
+  - powershell: |
+      $buildEnv = 'test'
+      
+      if($env:BUILD_SOURCEBRANCH -match '/hotfix') { $buildEnv='staging' }
+      if($env:BUILD_SOURCEBRANCH -match '/master') { $buildEnv='production' }
+      if($env:BUILD_SOURCEBRANCH -match '/release') { $buildEnv='staging' }
+      
+      Write-Host "# Building for environment: $buildEnv #";
+      npm run build:$buildEnv
+    workingDirectory: 'source/Kimo.ZLApp.Web/ClientApp'
+    displayName: 'Vue Build'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results VSTest'
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '*.trx'
+      searchFolder: '$(Common.TestResultsDirectory)'
+      failTaskOnFailedTests: true
+      testRunTitle: VSTest
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet publish'
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: source//**/*.csproj
+      arguments: '-p:SpaEnvironment=$(buildEnv)  -o dist -r win-x64'
+      zipAfterPublish: false
+
+  - task: CopyFiles@2
+    displayName: 'Copy build to dist/build'
+    inputs:
+      SourceFolder: build
+      TargetFolder: dist/build
+
+  - task: CopyFiles@2
+    displayName: 'Copy deployconfig to dist/build incl. OverWrite'
+    inputs:
+      Contents: deployconfig.json
+      TargetFolder: dist/build
+      OverWrite: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy tools to dist/tools'
+    inputs:
+      SourceFolder: tools
+      TargetFolder: dist/tools
+
+  - task: CopyFiles@2
+    displayName: 'Copy cake start files to dist'
+    inputs:
+      Contents: |
+        build.ps1
+        build.cake
+      TargetFolder: dist
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish built artifacts to Azure DevOps'
+    inputs:
+      PathtoPublish: dist
+      ArtifactName: dist
+

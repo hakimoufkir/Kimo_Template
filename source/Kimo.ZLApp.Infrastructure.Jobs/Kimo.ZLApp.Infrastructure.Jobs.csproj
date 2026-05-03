@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Kimo.ZLApp.Application\Kimo.ZLApp.Application.csproj"/>
+        <ProjectReference Include="..\Kimo.ZLApp.Infrastructure\Kimo.ZLApp.Infrastructure.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Explicit override for vulnerable Newtonsoft.Json pulled in by Hangfire -->
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Hangfire" Version="1.8.20"/>
+    </ItemGroup>
+
+</Project>

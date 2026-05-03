@@ -1,0 +1,63 @@
+{
+  "title": ".NET + Vite + Vue",
+  "common": {
+    "confirm": "Confirm",
+    "deleteConfirm": "Do you really want to delete {content}?",
+    "yes": "Yes",
+    "no": "No",
+    "delete": "Delete",
+    "details": "Details",
+    "timestamp": "Timestamp",
+    "selected": "selected",
+    "value": "Value",
+    "save": "Save",
+    "noEntries": "No entries available.",
+    "successfullySaved": "Saved successfully",
+    "successfullySavedInfo": "{type} was saved successfully.",
+    "successfullyDeleted": "Deleted successfully",
+    "successfullyDeletedInfo": "{successful} item(s) were deleted successfully.",
+    "errorOccurred": "An error occurred",
+    "validation": {
+      "required": "This field is required.",
+      "greaterThan": "The value must be greater than {value}.",
+      "lesserThan": "The value must be less than {value}.",
+      "greaterThanOrEqual": "The value must be greater than or equal to {value}.",
+      "lesserThanOrEqual": "The value must be less than or equal to {value}."
+    },
+    "loading": "Loading...",
+    "refresh": "Refresh"
+  },
+  "navigation": {
+    "start": "Home",
+    "weatherForecasts": "Weather Forecasts",
+    "locations": "Locations"
+  },
+  "application": {
+    "abbreviation": "MP",
+    "name": "My Project"
+  },
+  "weatherForecasts": {
+    "title": "Weather Forecasts",
+    "forecast": "Forecast",
+    "forecasts": "Forecasts",
+    "precipitation": "Precipitation",
+    "temperature": "Temperature",
+    "hour": "Hour",
+    "date": "Date",
+    "selectDates": "Select forecast date",
+    "selectFutureDate": "Select a future date",
+    "details": "Forecast details",
+    "insert": "Add forecast",
+    "deletionFailed": "The forecast(s) could not be deleted because of an error.",
+    "insertionFailed": "The forecast could not be added because of an error."
+  },
+  "locations": {
+    "location": "Location",
+    "locations": "Locations",
+    "selectLocation": "Select location",
+    "selectLocations": "Select location(s)",
+    "title": "Locations",
+    "description": "This list loads all locations through the protected /locations endpoint.",
+    "loadingFailed": "The locations could not be loaded."
+  }
+}

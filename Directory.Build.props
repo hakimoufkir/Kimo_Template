@@ -1,0 +1,13 @@
+<Project>
+
+  <ItemGroup>
+    <!--
+      CVE-2026-33116 and CVE-2026-26171: DoS in EncryptedXml class.
+      Fixed in System.Security.Cryptography.Xml 10.0.6 (not yet released as of .NET 10.0.5).
+      Remove these suppressions once the SDK is upgraded to 10.0.6+.
+    -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-37gx-xxp4-5rgx"/>
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-w3x6-4m5h-cxqf"/>
+  </ItemGroup>
+
+</Project>

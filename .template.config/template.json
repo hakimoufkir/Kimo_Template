@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Kimo",
+  "classifications": [ "Web", "API", "Clean Architecture", "Vue" ],
+  "name": "Kimo ZLApp Clean Architecture Solution",
+  "identity": "Kimo.ZLApp.Template",
+  "shortName": "zlapp",
+  "description": "A .NET 10 Clean Architecture solution with ASP.NET Core Web API, Vue 3 SPA, Hangfire, EF Core, Serilog, and OIDC authentication.",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "sourceName": "ZLApp",
+  "preferNameDirectory": true,
+  "symbols": {
+    "CompanyName": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Kimo",
+      "replaces": "Kimo",
+      "fileRename": "Kimo",
+      "description": "Company or namespace prefix (e.g. Acme, MyCompany). Replaces 'Kimo' everywhere."
+    }
+  },
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "exclude": [
+        ".git/**",
+        ".vs/**",
+        ".idea/**",
+        "**/bin/**",
+        "**/obj/**",
+        "**/node_modules/**",
+        "template-pack/**",
+        ".claude/**"
+      ]
+    }
+  ]
+}
